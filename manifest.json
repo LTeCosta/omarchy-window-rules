@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.ltecosta.window-rules",
+  "name": "Window Rules",
+  "version": "1.0.0",
+  "author": "Lucas Costa",
+  "license": "MIT",
+  "description": "Capture an open window's place and state as a Hyprland window rule, and list, edit and order your rules from the bar.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Window Rules",
+    "description": "Rules for where and how windows open: workspace, tile or float, size, position, monitor, fullscreen, focus, pin and opacity.",
+    "category": "System",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {},
+    "schema": []
+  }
+}

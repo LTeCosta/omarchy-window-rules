@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Stand-in for hyprctl in store.smoke.sh. Records each call's arguments in
+# $FAKE_HYPRCTL_DIR/calls and answers with canned output. Flag files in that
+# directory change its behaviour: fail-reload makes `reload` exit 1,
+# hang-reload makes it hang until it is killed, and config-errors makes
+# `configerrors` print the lines it holds.
+set -u
+dir=${FAKE_HYPRCTL_DIR:?}
+printf '%s\n' "$*" >> "$dir/calls"
+
+case ${1:-} in
+  reload)
+    [[ -e $dir/hang-reload ]] && exec sleep 30
+    if [[ -e $dir/fail-reload ]]; then
+      echo "error: reload failed" >&2
+      exit 1
+    fi
+    echo ok
+    ;;
+  repl)
+    # describe() of a loader that read the current file.
+    revision=$(grep -o '"revision": *[0-9]*' "${FAKE_RULES:?}" 2>/dev/null | head -n 1 | grep -o '[0-9]*$')
+    printf '{"loaded":true,"loaderVersion":"0.0.0-smoke","schema":1,"revision":%s,"rules":0,"dynamic":0,"resolvers":[],"errors":[]}\n' "${revision:-0}"
+    ;;
+  configerrors)
+    if [[ -e $dir/config-errors ]]; then cat "$dir/config-errors"; else echo; fi
+    ;;
+  activewindow)
+    echo '{"address":"0x1","class":"org.example.Smoke","title":"Smoke","floating":false,"monitor":0,"workspace":{"id":2,"name":"2"},"fullscreen":0,"pinned":false,"pid":7}'
+    ;;
+  monitors)
+    echo '[{"id":0,"name":"SMOKE-1","description":"Smoke Display","x":0,"y":0,"width":1920,"height":1080,"scale":1,"focused":true}]'
+    ;;
+  clients)
+    echo '[]'
+    ;;
+  *)
+    exit 2
+    ;;
+esac

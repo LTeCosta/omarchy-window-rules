@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Stand-in for stat in store.smoke.sh: runs the real one ($REAL_STAT). While
+# $FAKE_HYPRCTL_DIR/swap-lock exists, the first call whose last argument is
+# the directory that file names answers as the real stat did and then puts a
+# fresh lock in place of the stale one, as another bar taking the lock over
+# between this bar's stat and its takeover would.
+set -u
+out=$("${REAL_STAT:?}" "$@")
+code=$?
+flag=${FAKE_HYPRCTL_DIR:?}/swap-lock
+if [[ -e $flag && ${!#} == "$(cat "$flag")" ]]; then
+  rm -f "$flag"
+  rmdir "${!#}" && mkdir "${!#}"
+fi
+[[ -n $out ]] && printf '%s\n' "$out"
+exit "$code"
