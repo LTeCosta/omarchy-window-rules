@@ -14,17 +14,8 @@ Verified with Omarchy `4.5.0-3`.
 
 ### 1. Install the plugin
 
-From a published standalone plugin repository:
-
 ```bash
-omarchy plugin add <plugin-repository-url>
-omarchy plugin enable io.github.ltecosta.window-rules
-```
-
-Or from a checkout of this repository:
-
-```bash
-scripts/install window-rules
+omarchy plugin add https://github.com/LTeCosta/omarchy-window-rules.git
 omarchy plugin enable io.github.ltecosta.window-rules
 ```
 
@@ -614,7 +605,7 @@ You can also inspect the panel with `omarchy-shell io.github.ltecosta.window-rul
 
 - **Disabling the widget**: disabling or removing the widget from the bar (`omarchy plugin disable io.github.ltecosta.window-rules`) stops only the bar UI; your rules keep working because Hyprland loads `hypr/window-rules.lua` and `rules.json` directly without the shell.
 - **Removing the plugin**: running `omarchy plugin remove io.github.ltecosta.window-rules` deletes the plugin files; the `io.open` and `pcall(dofile, path)` guard in `~/.config/hypr/hyprland.lua` skips the block cleanly so Hyprland starts with no errors and none of the plugin's rules applied.
-- **Updating**: reinstall or update the plugin (for example `scripts/install window-rules`), run `omarchy-restart-shell` so the shell loads updated QML, and run `hyprctl reload` so Hyprland loads the updated Lua loader. If the loaded Lua version, rules schema format, or `describe()` API differs from what the panel expects, the panel shows the corresponding note (`loader.versionMismatch`, `loader.schemaOlder`, or `loader.apiNewer`).
+- **Updating**: update the plugin with `omarchy plugin update io.github.ltecosta.window-rules`, run `omarchy-restart-shell` so the shell loads updated QML, and run `hyprctl reload` so Hyprland loads the updated Lua loader. If the loaded Lua version, rules schema format, or `describe()` API differs from what the panel expects, the panel shows the corresponding note (`loader.versionMismatch`, `loader.schemaOlder`, or `loader.apiNewer`).
 - **Backup fallback**: if `rules.json` becomes unreadable or fails JSON/document validation (including a zero-byte file), `window_rules.load()` automatically loads a valid `rules.json.bak` and records `using-backup`, keeping your last valid rules active until you fix `rules.json` or click **Restore the last valid version** in the panel.
 - **Uninstall**:
   1. Remove the loader block (and any key bindings) from `~/.config/hypr/hyprland.lua` (and `~/.config/hypr/bindings.lua` if bound there) and run `hyprctl reload`.
@@ -631,7 +622,7 @@ scripts/check
 
 `scripts/check` validates `manifest.json` (and runs `omarchy-plugin-validate` when installed), checks every JSON file with `jq`, runs the Node tests, runs every Lua test file on every installed Lua interpreter at version 5.4 or later (`lua5.4`, `lua5.5`, `lua` — failing if none is installed), runs headless Quickshell smoke tests (skipping with a notice if `qs` is not installed), and runs `qmllint` on every non-test QML file (`qmllint` is required and fails the check if missing).
 
-From `plugins/window-rules/`, the individual test files are:
+From the repository root, the individual test files are:
 
 - `tests/model.test.js` (`node --test`): `Model.js` validation, shared conformance cases (object, raw-text, and `compileCases`), exact-app and RE2/pattern checks, capture, serialization, save/restore plans, writer lock logic, conflict reapplication, invalid-rule repair, panel helpers (hero state, summary counts, target badges/glyphs), and README/example documentation checks.
 - `tests/shared.test.js` (`node --test`): `Shared.js` monitor-scoped cross-instance capture handoff, 5-second TTL expiry, empty-capture delivery, and open-panel tracking.
